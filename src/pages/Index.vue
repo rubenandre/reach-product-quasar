@@ -3,18 +3,23 @@
     <!-- Card -->
     <q-card class="my-card" :dark="true" v-for="item in allProducts.products" :key="allProducts.products.indexOf(item)">
       <q-card-section class="bg-blue-grey text-white">
-        <div class="text-h6">{{item.productName}}</div>
+        <div class="text-h6">
+          {{item.productName}}
+          <div class="absolute-right">
+            <q-btn round dense flat icon="delete" color="dark" @click="deleteProduct(allProducts.products.indexOf(item))"/>
+          </div>
+        </div>
         <div class="text-subtitle2">{{item.productBrand}}</div>
         <q-linear-progress rounded style="height: 20px" :value="item.productTotalSaved/item.productPrice || 0" color="secondary" class="q-mt-sm">
           <div class="absolute-full flex flex-center">
-            <q-badge color="secondary" text-color="white" :label="item.productTotalSaved || 0 + '/' + item.productPrice || 0" />
+            <q-badge color="secondary" text-color="white">{{item.productTotalSaved + '/' + item.productPrice}}</q-badge>
           </div>
         </q-linear-progress>
       </q-card-section>
         <q-card-actions align="center">
-          <q-input outlined v-model="valueToAdd" label="Saved..." :dense="true" :dark="true">
+          <q-input outlined v-model="valueToAdd" label="Saved..." :dense="true" lazy-rules :rules="[ val => val !== null && val.trim() !== '' || 'Please type something', val => val >= 0 || 'Invalid Price']" :dark="true">
             <template v-slot:append>
-              <q-btn round dense flat icon="add" />
+              <q-btn round dense flat icon="add" @click="updateAquiredValue(allProducts.products.indexOf(item))" />
             </template>
           </q-input>
         </q-card-actions>
@@ -73,14 +78,28 @@ export default {
       this.product.productBrand = null
       this.product.productName = null
     },
-    onSubmit: function () {
+    onSubmit: async function () {
       this.allProducts.products.push(this.product)
-      this.$q.localStorage.set('products', JSON.stringify(this.allProducts))
+      await this.$q.localStorage.set('products', JSON.stringify(this.allProducts))
       this.modalOpen = false
       this.$forceUpdate()
     },
     getProducts: async function () {
       return await JSON.parse(this.$q.localStorage.getItem('products')).products || []
+    },
+    updateAquiredValue: async function (idProduct) {
+      if (parseFloat(this.allProducts.products[idProduct].productTotalSaved) + parseFloat(this.valueToAdd) >= parseFloat(this.allProducts.products[idProduct].productPrice)) {
+        this.allProducts.products[idProduct].productTotalSaved = parseFloat(this.allProducts.products[idProduct].productPrice)
+      } else {
+        this.allProducts.products[idProduct].productTotalSaved = parseFloat(this.allProducts.products[idProduct].productTotalSaved) + parseFloat(this.valueToAdd)
+      }
+      await this.$q.localStorage.set('products', JSON.stringify(this.allProducts))
+      this.$forceUpdate()
+    },
+    deleteProduct: async function (idProduct) {
+      this.allProducts.products = this.allProducts.products.slice(0, idProduct).concat(this.allProducts.products.slice(idProduct + 1, this.allProducts.products.length))
+      await this.$q.localStorage.set('products', JSON.stringify(this.allProducts))
+      this.$forceUpdate()
     }
   },
   mounted: function () {
