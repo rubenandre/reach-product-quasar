@@ -113,6 +113,7 @@ export default {
         timeout: 5000
       })
       this.$forceUpdate()
+      this.valueToAdd = null
     },
     deleteProduct: async function (idProduct) {
       this.allProducts.products = this.allProducts.products.slice(0, idProduct).concat(this.allProducts.products.slice(idProduct + 1, this.allProducts.products.length))

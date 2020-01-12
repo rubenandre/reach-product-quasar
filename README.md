@@ -1,13 +1,40 @@
-# Reach Product App (reach-product-quasar)
+# Reach Product App (Quasar)
 
 Follow your savings for products
+
+## Functionalities
+- Add Products
+- Update total aquired value of a product
+- Remove Product
+
+## Technologies Used
+- Quasar
+- LocalStorage
+- Notify
+
+## Screenshoots
+Add product screen
+
+![Image Not Found](docs/addProduct.png)
+
+Main screen after add one product
+
+![Image Not Found](docs/mainScreenWithProduct.png)
+
+Update total saved of a product
+
+![Image Not Found](docs/addSavedValue.png)
+
+Delete Product
+
+![Image Not Found](docs/deleteProduct.png)
 
 ## Install the dependencies
 ```bash
 yarn
 ```
 
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
+### Start the app in development mode)
 ```bash
 quasar dev
 ```
@@ -21,6 +48,3 @@ yarn run lint
 ```bash
 quasar build
 ```
-
-### Customize the configuration
-See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
