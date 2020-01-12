@@ -17,7 +17,7 @@
         </q-linear-progress>
       </q-card-section>
         <q-card-actions align="center">
-          <q-input outlined v-model="valueToAdd" label="Saved..." :dense="true" lazy-rules :rules="[ val => val !== null && val.trim() !== '' || 'Please type something', val => val >= 0 || 'Invalid Price']" :dark="true">
+          <q-input outlined v-model="valueToAdd" label="Saved..." :dense="true" :dark="true">
             <template v-slot:append>
               <q-btn round dense flat icon="add" @click="updateAquiredValue(allProducts.products.indexOf(item))" />
             </template>
@@ -82,23 +82,49 @@ export default {
       this.allProducts.products.push(this.product)
       await this.$q.localStorage.set('products', JSON.stringify(this.allProducts))
       this.modalOpen = false
+      this.$q.notify({
+        color: 'green',
+        textColor: 'white',
+        icon: 'delete',
+        position: 'top-right',
+        message: `Sucessfuly added a new product`,
+        timeout: 5000
+      })
       this.$forceUpdate()
     },
     getProducts: async function () {
       return await JSON.parse(this.$q.localStorage.getItem('products')).products || []
     },
     updateAquiredValue: async function (idProduct) {
+      if (this.valueToAdd === null || this.valueToAdd.trim().length === 0) return
+      if (this.valueToAdd === null) return
       if (parseFloat(this.allProducts.products[idProduct].productTotalSaved) + parseFloat(this.valueToAdd) >= parseFloat(this.allProducts.products[idProduct].productPrice)) {
         this.allProducts.products[idProduct].productTotalSaved = parseFloat(this.allProducts.products[idProduct].productPrice)
       } else {
         this.allProducts.products[idProduct].productTotalSaved = parseFloat(this.allProducts.products[idProduct].productTotalSaved) + parseFloat(this.valueToAdd)
       }
       await this.$q.localStorage.set('products', JSON.stringify(this.allProducts))
+      this.$q.notify({
+        color: 'green',
+        textColor: 'white',
+        icon: 'delete',
+        position: 'top-right',
+        message: `You added ${this.valueToAdd} to Product: ${this.allProducts.products[idProduct].productName}`,
+        timeout: 5000
+      })
       this.$forceUpdate()
     },
     deleteProduct: async function (idProduct) {
       this.allProducts.products = this.allProducts.products.slice(0, idProduct).concat(this.allProducts.products.slice(idProduct + 1, this.allProducts.products.length))
       await this.$q.localStorage.set('products', JSON.stringify(this.allProducts))
+      this.$q.notify({
+        color: 'negative',
+        textColor: 'white',
+        icon: 'delete',
+        position: 'top-right',
+        message: 'You removed an product',
+        timeout: 5000
+      })
       this.$forceUpdate()
     }
   },
